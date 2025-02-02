@@ -9,21 +9,61 @@ import asyncio
 from django.core.cache import cache
 
 # View for rendering HTML page
-
 def FAQSViews(request):
     lang = request.GET.get('lang', 'en')  
     faqs = FAQ.objects.all()
 
     for faq in faqs:
-        translated_question, translated_answer = faq.get_translated_text(lang_code=lang)
         
-        if not translated_question or not translated_answer:
-            translated_question, translated_answer = asyncio.run(detect_and_translate(faq, Translator(), lang))
-            
+        translated_question = None
+        translated_answer = None
+        
+        if getattr(faq, f'question_{lang}', None):
+           translated_question = getattr(faq, f'question_{lang}')
+        if getattr(faq, f'answer_{lang}', None):
+           translated_answer = getattr(faq, f'answer_{lang}')
+
+        
+        cache_key_q=None
+        cache_key_a=None
+        if not translated_question:    
+         cache_key_q = f"translate:{faq.question}:{lang}"
+        if not translated_answer:
+         cache_key_a = f"translate:{faq.answer}:{lang}"
+
+        translated_question = cache.get(cache_key_q)
+        translated_answer = cache.get(cache_key_a)
+
+        if not translated_question:
+            translated_question = sync_detect_and_translate(faq.question, lang)
+            cache.set(cache_key_q, translated_question, timeout=60 * 60 * 24)  
+
+        if not translated_answer:
+            translated_answer = sync_detect_and_translate(faq.answer, lang)
+            cache.set(cache_key_a, translated_answer, timeout=60 * 60 * 24)
+        
+        setattr(faq, f'question_{lang}', translated_question)
+        setattr(faq, f'answer_{lang}', translated_answer)
         faq.translated_question = translated_question
         faq.translated_answer = translated_answer
 
-    return render(request, 'faqs.html', {'faqs': faqs})
+    return render(request, 'faqs.html', {'faqs': faqs, 'selected_lang': lang})
+
+
+def sync_detect_and_translate(text, target_language):
+    if not text.strip():
+        return text  
+
+    translator = Translator()
+    
+    try:
+        detected_lang = translator.detect(text).lang
+        if detected_lang != target_language:
+            return translator.translate(text, dest=target_language).text
+        return text  
+    except Exception as e:
+        return text 
+
 
 async def detect_and_translate(translator, text, target_language):
    

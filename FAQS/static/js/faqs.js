@@ -12,3 +12,7 @@ function toggleAnswer(element) {
 function redirectToEdit(faqId) {
     window.location.href = window.location.href+`edit/?faq_id=${faqId}`; 
 }
+function changeLanguage() {
+    var selectedLang = document.getElementById("language-select").value;
+    window.location.href = "?lang=" + selectedLang;
+}

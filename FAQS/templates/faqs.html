@@ -9,15 +9,28 @@
 </head>
 <body>
 
-    <h1>FQA's(Click on any answer to edit it using CKEditor)</h1>
+    <h1>FQA's</h1>
+    <div class="options"> 
+        <label for="language-select">Select Language:</label>
+          <select id="language-select" name="language" onchange="changeLanguage()">
+            <option value="en" {% if selected_lang == 'en' %}selected{% endif %}>English (Default)</option>
+            <option value="hi" {% if selected_lang == 'hi' %}selected{% endif %}>Hindi</option>
+            <option value="bn" {% if selected_lang == 'bn' %}selected{% endif %}>Bengali</option>
+            <option value="ar" {% if selected_lang == 'ar' %}selected{% endif %}>Arabic</option>
+            <option value="fr" {% if selected_lang == 'fr' %}selected{% endif %}>French</option>
+            <option value="ur" {% if selected_lang == 'ur' %}selected{% endif %}>Urdu</option>
+            <option value="ru" {% if selected_lang == 'ru' %}selected{% endif %}>Russian</option>
+          </select>
+    </div>
+   
     <div class="faq-container">
         {% for faq in faqs %}
         <div class="faq-item">
             <div class="faq-question" onclick="toggleAnswer(this)">
-                <h3>{{ faq.question }}</h3>
+                <h3>{{ faq.translated_question }}</h3>
                 <span class="toggle-icon" >&#9660;</span> 
             </div>
-            <div class="faq-answer" title="Click to Edit" onclick="redirectToEdit({{ faq.id }})">{{ faq.answer|safe }}</div>
+            <div class="faq-answer" title="Click to Edit" onclick="redirectToEdit({{ faq.id }})">{{ faq.translated_answer|safe }}</div>
         </div>
         {% endfor %}
     </div>
