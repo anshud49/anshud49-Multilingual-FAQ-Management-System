@@ -48,7 +48,7 @@ Live link - https://anshud49-multilingual-faq.onrender.com/
 ## Installation
 ### 1. Clone the Repository
 ```sh
- git clone https://github.com/yourusername/django-faq-system.git
+ git clone https://github.com/anshud49/anshud49-Multilingual-FAQ-Management-System
  cd BharatFD
 ```
 
