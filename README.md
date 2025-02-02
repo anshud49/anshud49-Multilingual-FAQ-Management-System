@@ -4,7 +4,7 @@
 ## Overview
 This is a Django-based FAQ (Frequently Asked Questions) Management System that supports multilingual FAQs using **CKEditor** for rich text answers and hence adding the functionality WYSIWYG. It also includes **automatic translation** using Google Translate and supports **language-based filtering**.
 
-Live link - http://127.0.0.1:8000/faqs/
+Live link - https://anshud49-multilingual-faq.onrender.com/
 
 #### Use the following credentials to log in to the admin site
 - username-Anshu
@@ -100,11 +100,11 @@ python manage.py runserver
 | DELETE | `/api/faqs/{faq_id}/` | Delete an FAQ |
 
 ## Usage
-- Navigate to `http://127.0.0.1:8000/admin/` to manage FAQs.
-- Access `http://127.0.0.1:8000/api/faqs/` for API responses.
+- Navigate to `https://anshud49-multilingual-faq.onrender.com/admin/` to manage FAQs.
+- Access `https://anshud49-multilingual-faq.onrender.com/api/faqs/` for API responses.
 - Add `?lang=fr` or any supported language code to get translations.
-- For viewing all FAQs, visit `http://127.0.0.1:8000/faqs/`.
-- By clicking on any FAQ answer, you will be redirected to `http://127.0.0.1:8000/faqs/edit/?faq_id={faq_id}` to edit the question and the answer using **CKEditor**.
+- For viewing all FAQs, visit `https://anshud49-multilingual-faq.onrender.com/faqs/`.
+- By clicking on any FAQ answer, you will be redirected to `https://anshud49-multilingual-faq.onrender.com/faqs/edit/?faq_id={faq_id}` to edit the question and the answer using **CKEditor**.
 
 ### Example languages:
 - `en` (default)
