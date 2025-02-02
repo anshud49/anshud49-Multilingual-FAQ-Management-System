@@ -10,8 +10,16 @@ function toggleAnswer(element) {
 }
 
 function redirectToEdit(faqId) {
-    window.location.href = window.location.href+`edit/?faq_id=${faqId}`; 
+    const urlParams = new URLSearchParams(window.location.search);
+    const lang = urlParams.get('lang');  
+
+    if (lang) {
+        window.location.href = `${window.location.origin}/faqs/edit/?lang=${lang}&faq_id=${faqId}`;
+    } else {
+        window.location.href = `${window.location.origin}/faqs/edit/?faq_id=${faqId}`;
+    }
 }
+
 function changeLanguage() {
     var selectedLang = document.getElementById("language-select").value;
     window.location.href = "?lang=" + selectedLang;
