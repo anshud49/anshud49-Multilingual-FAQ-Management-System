@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/faqs-edit.css' %}">
+  
+</head>
+<body>
+    <h1>EDIT FAQ</h1>
+    <form method="POST" action="/faqs/edit/?faq_id={{faq_id}}">
+        {% csrf_token %}
+        {{form.media}}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+<script src="/ckeditor/ckeditor.js"></script>
+</html>

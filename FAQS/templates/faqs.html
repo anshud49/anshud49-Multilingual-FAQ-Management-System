@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ Section</title>
+    <link rel="stylesheet" href="{% static 'css/faqs.css' %}">
+</head>
+<body>
+
+    <h1>FQA's(Click on any answer to edit it using CKEditor)</h1>
+    <div class="faq-container">
+        {% for faq in faqs %}
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleAnswer(this)">
+                <h3>{{ faq.question }}</h3>
+                <span class="toggle-icon" >&#9660;</span> 
+            </div>
+            <div class="faq-answer" title="Click to Edit" onclick="redirectToEdit({{ faq.id }})">{{ faq.answer|safe }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    <script src="{% static 'js/faqs.js' %}"></script>
+</body>
+</html>
