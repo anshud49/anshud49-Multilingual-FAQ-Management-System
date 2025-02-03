@@ -76,7 +76,7 @@ async def detect_and_translate(text, target_language, faq_id):
 
         if detected_lang != target_language:
             translated_text = GoogleTranslator(source=detected_lang, target=target_language).translate(text)
-            cache.set(cache_key, translated_text, timeout=60*60*24)  # Cache the translation for 24 hours
+            cache.set(cache_key, translated_text, timeout=60*60*24) 
             return translated_text
         else:
             return text  
@@ -119,24 +119,36 @@ class FAQViewSet(viewsets.ModelViewSet):
 
 def FaqsEditViews(request):
     faq_id = request.GET.get('faq_id')
-    lang = request.GET.get('lang', 'en')  
+    lang = request.GET.get('lang', 'en') 
     faq = get_object_or_404(FAQ, id=faq_id) if faq_id else None
-    question=getattr(faq,f'question_{lang}',None)
-    answer=getattr(faq,f'answer_{lang}',None)
     
+   
+    question = getattr(faq, f'question_{lang}', None)
+    answer = getattr(faq, f'answer_{lang}', None)
+
     class DynamicFAQForm(FAQForms):
         def __init__(self, *args, **kwargs):
+            initial_values = {
+                'question': question,
+                'answer': answer
+            }
+            
             super().__init__(*args, **kwargs)
-            allowed_fields = [f'question_{lang}', f'answer_{lang}']
-            for field_name in list(self.fields.keys()): 
+            
+            allowed_fields = ['question', 'answer']
+            for field_name in list(self.fields.keys()):
                 if field_name not in allowed_fields:
                     del self.fields[field_name]
+            
+            for field_name, value in initial_values.items():
+                if field_name in self.fields:
+                    self.fields[field_name].initial = value
 
     if request.method == 'POST':
         form = DynamicFAQForm(request.POST, instance=faq)
         if form.is_valid():
             form.save()
-            return redirect(f'/faqs/?lang={lang}') 
+            return redirect(f'/faqs/?lang={lang}')
     else:
         form = DynamicFAQForm(instance=faq)
 

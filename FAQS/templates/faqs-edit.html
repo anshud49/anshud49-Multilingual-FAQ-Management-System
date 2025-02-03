@@ -4,16 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Edit FAQ</title>
     <link rel="stylesheet" href="{% static 'css/faqs-edit.css' %}">
-  
 </head>
 <body>
     <h1>EDIT FAQ</h1>
-    <form method="POST" action="/faqs/edit/?faq_id={{faq_id}}">
+
+    <form method="POST" action="/faqs/edit/?faq_id={{ faq_id }}&lang={{ selected_lang }}">
         {% csrf_token %}
-        {{form.media}}
+        {{ form.media }}
         {{ form.as_p }}
+
         <button type="submit">Submit</button>
     </form>
 </body>

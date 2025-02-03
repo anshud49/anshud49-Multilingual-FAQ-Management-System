@@ -26,7 +26,7 @@ class FAQ(models.Model):
     answer_ur = RichTextField(blank=True, null=True)  
 
     def save(self, *args, **kwargs):
-        language_codes = ['hi', 'bn', 'fr', 'ar', 'ru', 'ur']
+        language_codes = ['en','hi', 'bn', 'fr', 'ar', 'ru', 'ur']
         
         try:
             detected_lang_question = detect(self.question) if self.question else 'en'
