@@ -6,6 +6,8 @@ This is a Django-based FAQ (Frequently Asked Questions) Management System that s
 
 Live link - https://anshud49-multilingual-faq.onrender.com/
 
+API link- https://anshud49-multilingual-faq.onrender.com/api/faqs/?lang=en
+
 #### Use the following credentials to log in to the admin site
 - username-Anshu
 - password-Anshu@123
