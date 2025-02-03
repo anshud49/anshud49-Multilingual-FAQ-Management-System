@@ -64,34 +64,32 @@ def FAQSViews(request):
 
 
 
-async def detect_and_translate(translator, text, target_language):
-   
-    cache_key = f"translate:{text}:{target_language}"  
+async def detect_and_translate(text, target_language, faq_id):
+    cache_key = f"translate:{faq_id}:{target_language}"  
 
     cached_translation = cache.get(cache_key)
     if cached_translation:
-        return cached_translation  
-    
+        return cached_translation 
+
     try:
-        detected_lang = await translator.detect(text)
-        
-        if detected_lang.lang != target_language:
-            translated = await translator.translate(text, dest=target_language)
-            cache.set(cache_key, translated.text, timeout=60*60*24)  
-            return translated.text
-        
-        return text  
+        detected_lang = detect(text)
+
+        if detected_lang != target_language:
+            translated_text = GoogleTranslator(source=detected_lang, target=target_language).translate(text)
+            cache.set(cache_key, translated_text, timeout=60*60*24)  # Cache the translation for 24 hours
+            return translated_text
+        else:
+            return text  
     except Exception as e:
-        return text  
+        return text
 
 
 async def translate_faqs_async(faqs, target_language):
-    translator = Translator()
     tasks = []
 
     for faq in faqs:
-        tasks.append(detect_and_translate(translator, faq['question'], target_language))
-        tasks.append(detect_and_translate(translator, faq['answer'], target_language))
+        tasks.append(detect_and_translate(faq['question'], target_language, faq['id'])) 
+        tasks.append(detect_and_translate(faq['answer'], target_language, faq['id']))   
 
     translated_questions_answers = await asyncio.gather(*tasks)
 
@@ -100,6 +98,7 @@ async def translate_faqs_async(faqs, target_language):
         faq['answer'] = translated_questions_answers[i * 2 + 1]
 
     return faqs
+
 
 class FAQViewSet(viewsets.ModelViewSet):
     queryset = FAQ.objects.all()
@@ -110,11 +109,13 @@ class FAQViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         lang = request.query_params.get('lang', 'en')  
+
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
         data = asyncio.run(translate_faqs_async(serializer.data, lang))
         return Response(data)
+
 
 def FaqsEditViews(request):
     faq_id = request.GET.get('faq_id')
