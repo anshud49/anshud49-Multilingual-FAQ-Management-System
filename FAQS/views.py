@@ -119,10 +119,10 @@ class FAQViewSet(viewsets.ModelViewSet):
 
 def FaqsEditViews(request):
     faq_id = request.GET.get('faq_id')
-    lang = request.GET.get('lang', 'en') 
+    lang = request.GET.get('lang', 'en')  
     faq = get_object_or_404(FAQ, id=faq_id) if faq_id else None
-    
-   
+
+
     question = getattr(faq, f'question_{lang}', None)
     answer = getattr(faq, f'answer_{lang}', None)
 
@@ -132,17 +132,16 @@ def FaqsEditViews(request):
                 'question': question,
                 'answer': answer
             }
-            
+            kwargs['initial'] = initial_values
             super().__init__(*args, **kwargs)
             
+
             allowed_fields = ['question', 'answer']
             for field_name in list(self.fields.keys()):
                 if field_name not in allowed_fields:
                     del self.fields[field_name]
             
-            for field_name, value in initial_values.items():
-                if field_name in self.fields:
-                    self.fields[field_name].initial = value
+            
 
     if request.method == 'POST':
         form = DynamicFAQForm(request.POST, instance=faq)

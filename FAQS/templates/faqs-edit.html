@@ -13,7 +13,12 @@
     <form method="POST" action="/faqs/edit/?faq_id={{ faq_id }}&lang={{ selected_lang }}">
         {% csrf_token %}
         {{ form.media }}
-        {{ form.as_p }}
+        <label for="id_question">Question</label>
+        {{ form.question }}  
+    
+         <label for="id_answer">Answer</label>
+         {{ form.answer }}  
+ 
 
         <button type="submit">Submit</button>
     </form>
