@@ -4,9 +4,9 @@
 ## Overview
 This is a Django-based FAQ (Frequently Asked Questions) Management System that supports multilingual FAQs using **CKEditor** for rich text answers and hence adding the functionality WYSIWYG. It also includes **automatic translation** using Google Translate and supports **language-based filtering**.
 
-Live link - https://anshud49-multilingual-faq.onrender.com/
-
-API link- https://anshud49-multilingual-faq.onrender.com/api/faqs/?lang=en
+Live link - https://anshud49-multilingual-faq.onrender.com/        
+API link- https://anshud49-multilingual-faq.onrender.com/api/faqs/?lang=en      
+Admin Panel- https://anshud49-multilingual-faq.onrender.com/admin/
 
 #### Use the following credentials to log in to the admin site
 - username-Anshu
