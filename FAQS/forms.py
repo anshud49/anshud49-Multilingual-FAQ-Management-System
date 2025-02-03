@@ -6,5 +6,5 @@ class FAQForms(forms.ModelForm):
     answer = forms.CharField(widget=CKEditorWidget())
     class Meta:
         model=FAQ
-        fields=['question','answer']
+        fields='__all__'
         

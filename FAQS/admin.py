@@ -14,7 +14,5 @@ class FAQAdmin(admin.ModelAdmin):
     def Answer(self, obj):
         return obj.answer[:50] + '...' if len(obj.answer) > 50 else obj.answer
 
-    def get_fields(self, request, obj=None):
-        return ['question', 'answer']
 
 admin.site.register(FAQ, FAQAdmin)

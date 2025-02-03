@@ -7,12 +7,47 @@ from .forms import FAQForms
 from googletrans import Translator
 import asyncio
 from django.core.cache import cache
+from deep_translator import GoogleTranslator
+from langdetect import detect
 
-# View for rendering HTML page
-def FAQSViews(request):
-    lang = request.GET.get('lang', 'en')  
+
+def update_faq_translations():
+    language_codes = ['en','hi', 'bn', 'fr', 'ar', 'ru', 'ur'] 
     faqs = FAQ.objects.all()
 
+    for faq in faqs:
+        updated_fields = {}  
+
+        try:
+            detected_lang = detect(faq.question)
+        except:
+            detected_lang = 'en'  
+
+        try:
+            detected_lang_answer = detect(faq.answer)
+        except:
+            detected_lang_answer = 'en' 
+
+        for lang in language_codes:
+            question_field = f'question_{lang}'
+            answer_field = f'answer_{lang}'
+
+            updated_fields[question_field] = GoogleTranslator(source=detected_lang, target=lang).translate(faq.question)
+
+            updated_fields[answer_field] = GoogleTranslator(source=detected_lang_answer, target=lang).translate(faq.answer)
+
+        FAQ.objects.filter(id=faq.id).update(**updated_fields)
+        print(f"Updated FAQ ID: {faq.id}")
+
+    print("Translation update completed!")
+    
+import threading
+    
+def FAQSViews(request):
+    lang = request.GET.get('lang', 'en')  
+    # thread = threading.Thread(target=update_faq_translations)
+    # thread.start()
+    faqs = FAQ.objects.all()
     for faq in faqs:
         
         translated_question = None
@@ -23,46 +58,10 @@ def FAQSViews(request):
         if getattr(faq, f'answer_{lang}', None):
            translated_answer = getattr(faq, f'answer_{lang}')
 
-        
-        cache_key_q=None
-        cache_key_a=None
-        if not translated_question:    
-         cache_key_q = f"translate:{faq.question}:{lang}"
-        if not translated_answer:
-         cache_key_a = f"translate:{faq.answer}:{lang}"
-
-        translated_question = cache.get(cache_key_q)
-        translated_answer = cache.get(cache_key_a)
-
-        if not translated_question:
-            translated_question = sync_detect_and_translate(faq.question, lang)
-            cache.set(cache_key_q, translated_question, timeout=60 * 60 * 24)  
-
-        if not translated_answer:
-            translated_answer = sync_detect_and_translate(faq.answer, lang)
-            cache.set(cache_key_a, translated_answer, timeout=60 * 60 * 24)
-        
-        setattr(faq, f'question_{lang}', translated_question)
-        setattr(faq, f'answer_{lang}', translated_answer)
         faq.translated_question = translated_question
         faq.translated_answer = translated_answer
-
     return render(request, 'faqs.html', {'faqs': faqs, 'selected_lang': lang})
 
-
-def sync_detect_and_translate(text, target_language):
-    if not text.strip():
-        return text  
-
-    translator = Translator()
-    
-    try:
-        detected_lang = translator.detect(text).lang
-        if detected_lang != target_language:
-            return translator.translate(text, dest=target_language).text
-        return text  
-    except Exception as e:
-        return text 
 
 
 async def detect_and_translate(translator, text, target_language):
@@ -118,19 +117,26 @@ class FAQViewSet(viewsets.ModelViewSet):
         return Response(data)
 
 def FaqsEditViews(request):
-    faq_id = request.GET.get('faq_id') 
-    faq = None
-    form = FAQForms()
+    faq_id = request.GET.get('faq_id')
+    lang = request.GET.get('lang', 'en')  
+    faq = get_object_or_404(FAQ, id=faq_id) if faq_id else None
+    question=getattr(faq,f'question_{lang}',None)
+    answer=getattr(faq,f'answer_{lang}',None)
     
-    if faq_id:
-        faq = get_object_or_404(FAQ, id=faq_id)
+    class DynamicFAQForm(FAQForms):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            allowed_fields = [f'question_{lang}', f'answer_{lang}']
+            for field_name in list(self.fields.keys()): 
+                if field_name not in allowed_fields:
+                    del self.fields[field_name]
 
     if request.method == 'POST':
-        form = FAQForms(request.POST, instance=faq)  
+        form = DynamicFAQForm(request.POST, instance=faq)
         if form.is_valid():
-            form.save()  
-            return redirect('/faqs/')  
+            form.save()
+            return redirect(f'/faqs/?lang={lang}') 
     else:
-        form = FAQForms(instance=faq)  
+        form = DynamicFAQForm(instance=faq)
 
-    return render(request, 'faqs-edit.html', {'form': form, 'faq_id': faq_id})
+    return render(request, 'faqs-edit.html', {'form': form, 'faq_id': faq_id, 'selected_lang': lang})
