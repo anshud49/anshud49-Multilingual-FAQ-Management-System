@@ -28,7 +28,7 @@
         {% for faq in faqs %}
         <div class="faq-item">
             <div class="faq-question" onclick="toggleAnswer(this)">
-                <h3>{{ faq.translated_question }}</h3>
+                <p>{{ faq.translated_question }}</p>
                 <span class="toggle-icon" >&#9660;</span> 
             </div>
             <div class="faq-answer" title="Click to Edit" onclick="redirectToEdit({{ faq.id }})">{{ faq.translated_answer|safe }}</div>

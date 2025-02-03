@@ -1,5 +1,4 @@
-*
-{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -12,8 +11,20 @@ body {
     text-align: center;
 }
 
+.options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 5px;
+}
+
+.options select {
+    width: 15%;
+}
+
 .faq-container {
-    width: 60%;
+    width: 80%;
     margin: auto;
     background: #fff;
     padding: 20px;
@@ -35,6 +46,12 @@ body {
     padding: 0 10px;
 }
 
+.faq-question p {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: left;
+}
+
 .faq-answer {
     display: none;
     padding: 10px;
@@ -44,9 +61,50 @@ body {
     border-radius: 5px;
     text-align: start;
     cursor: pointer;
-  
+
 }
+
 .toggle-icon {
     font-size: 20px;
     cursor: pointer;
+}
+
+@media (max-width: 890px) {
+    .options select {
+        width: 18%;
+    }
+    .faq-container
+    {
+        width: 87%;
+    }
+}
+@media (max-width: 700px) {
+    .faq-question p {
+        font-size: 18px;
+    }
+    .faq-answer {
+        font-size: 18px;
+    }
+    .options select {
+        width: 24%;
+    }
+    .faq-container
+    {
+        width: 90%;
+    }
+}
+@media (max-width: 500px) {
+    .faq-question p {
+        font-size: 14px;
+    }
+    .faq-answer {
+        font-size: 14px;
+    }
+    .options select {
+        width: 30%;
+    }
+    .faq-container
+    {
+        width: 95%;
+    }
 }
